@@ -12,35 +12,43 @@ class GarageDoor:
 
     _valid_states = {0: 'Closed', 1: 'Open', 2: 'Intermediate'}
 
-    # Whether the input should be high (True: button pull up) or (False: button pull down)
+    # Whether the input should be high (True: button/switch pull up) or low (False: button/switch pull down)
     #   when it is triggered
-    _sensor_active_state_open = None
-    _sensor_active_state_closed = None
+    _sensor_active_state_open = True
+    _sensor_active_state_closed = True
 
-    # BCM Pin to read sensor state
-    _gpio_open_sensor_pin = None
-    _gpio_closed_sensor_pin = None
+    # BCM pins to read sensor states
+    _gpio_open_sensor_pin = -1
+    _gpio_closed_sensor_pin = -1
+
+    #BCM pin of door trigger relay
+    _gpio_door_trigger_pin = -1
+
+    # How long the relay stays closed when triggering the door to change state
+    _door_trigger_active_delay = 0.1
 
     # Should be a value 0, 1, or 2 corresponding to _states
     current_state = -1
 
-    def __init__(self, open_pin, closed_pin, open_active=True, closed_active=True):  # Constructor
+    def __init__(self, door_pin, open_pin, closed_pin, trigger_delay=0.1, open_active=True, closed_active=True):  # Constructor
+        self._gpio_door_trigger_pin = door_pin
         self._sensor_active_state_open = open_active
         self._sensor_active_state_closed = closed_active
+        self._door_trigger_active_delay = trigger_delay
         self._gpio_open_sensor_pin = open_pin
         self._gpio_closed_sensor_pin = closed_pin
 
         GPIO.setmode(GPIO.BCM)
 
         if self._sensor_active_state_open:
-            GPIO.setup(self._gpio_open_sensor_pin, GPIO.RISING)
+            GPIO.setup(self._gpio_open_sensor_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         else:
-            GPIO.setup(self._gpio_open_sensor_pin, GPIO.FALLING)
+            GPIO.setup(self._gpio_open_sensor_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         if self._sensor_active_state_closed:
-            GPIO.setup(self._gpio_closed_sensor_pin, GPIO.RISING)
+            GPIO.setup(self._gpio_closed_sensor_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         else:
-            GPIO.setup(self._gpio_closed_sensor_pin, GPIO.FALLING)
+            GPIO.setup(self._gpio_closed_sensor_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def toggle_state(self):
         # fire the relay trigger
@@ -66,8 +74,6 @@ class GarageDoor:
             # Maybe let subscribers handle invalid state
         return self.current_state
 
-    # Start doing the thing
-    def begin(self):
 
 
 
