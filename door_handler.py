@@ -5,10 +5,12 @@ import time as time
 class GarageDoor:
     """Garage door object"""  # __doc__ / docstring
 
-    CLOSED = 0
-    OPEN = 1
-    INTERMEDIATE = 2
-    INVALID = -1
+    VERSION = '0.2a'
+
+    STATE_CLOSED = 0
+    STATE_OPEN = 1
+    STATE_INTERMEDIATE = 2
+    STATE_INVALID = -1
 
     # Creator of the object should assign a function to this variable in order to receive
     #   updates about sensor state changes
@@ -32,7 +34,7 @@ class GarageDoor:
     # How long the relay stays closed when triggering the door to change state nul
     _door_trigger_active_delay = 0.1
 
-    # Should be a value 0, 1, or 2 corresponding to _states
+    # Should be a value 0, 1, 2, or -1
     _current_state = -1
     _previous_state = -1
 
@@ -62,6 +64,9 @@ class GarageDoor:
         else:
             GPIO.setup(self._gpio_closed_sensor_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+        GPIO.add_event_detect(self._gpio_open_sensor_pin, GPIO.BOTH, callback=self.local_callback)
+        GPIO.add_event_detect(self._gpio_closed_sensor_pin, GPIO.BOTH, callback=self.local_callback)
+
     def local_callback(self, channel):
         got_states = self.get_states()
         self.update_state(got_states)
@@ -70,7 +75,10 @@ class GarageDoor:
 
     def toggle_state(self):
         # If state is intermediate (probably moving) then ignore the toggle command
-        if self._current_state is self.INTERMEDIATE:
+        if self._current_state is self.STATE_INTERMEDIATE:
+            return None
+        if self._current_state is self.STATE_INVALID:
+            # Maybe do something if the state is invalid (notify to check hardware?)
             return None
         # Turn it on
         GPIO.output(self._gpio_door_trigger_pin, int(self._gpio_door_trigger_active))
@@ -79,8 +87,6 @@ class GarageDoor:
         # Turn it off
         GPIO.output(self._gpio_door_trigger_pin, int(not self._gpio_door_trigger_active))
 
-    # Keep track of the current state and trigger an "event" when the state changes
-    # Any subscribers will do what they need with the event information
     def get_states(self):
         open_sense_state = GPIO.input(self._gpio_open_sensor_pin)
         closed_sense_state = GPIO.input(self._gpio_closed_sensor_pin)
