@@ -95,11 +95,14 @@ class GarageDoor:
     def update_state(self, states=(0, 0)):
         # Set current state and return the value
         self._previous_state = self._current_state
-        if states[0] is 0 and states[1] is 0:
+        if states[0] is int(not self._sensor_active_state_open) and\
+                states[1] is int(not self._sensor_active_state_closed):
             self._current_state = 2
-        elif states[0] is 0 and states[1] is 1:
+        elif states[0] is int(not self._sensor_active_state_open) and\
+                states[1] is int(self._sensor_active_state_closed):
             self._current_state = 0
-        elif states[0] is 1 and states[1] is 0:
+        elif states[0] is int(self._sensor_active_state_open) and\
+                states[1] is int(not self._sensor_active_state_closed):
             self._current_state = 1
         else:
             self._current_state = -1
