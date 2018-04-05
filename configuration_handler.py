@@ -17,10 +17,10 @@ class ConfigurationHandler:
     DOOR_CONTROL_OUTPUT_PIN = None  # type: int
     DOOR_OPEN_SENSOR_INPUT_PIN = None  # type: int
     DOOR_CLOSED_SENSOR_INPUT_PIN = None  # type: int
-    DOOR_CONTROL_OUTPUT_ACTIVE_VALUE = None  # type: bool
+    DOOR_CONTROL_OUTPUT_ACTIVE = None  # type: bool
     DOOR_CONTROL_OUTPUT_ACTIVE_DELAY = None  # type: bool
-    DOOR_OPEN_SENSOR_INPUT_ACTIVE_VALUE = None  # type: bool
-    DOOR_CLOSED_SENSOR_ACTIVE_VALUE = None  # type: bool
+    DOOR_OPEN_SENSOR_INPUT_ACTIVE = None  # type: bool
+    DOOR_CLOSED_SENSOR_INPUT_ACTIVE = None  # type: bool
 
     _hexdigits = '0123456789abcdef'
 
@@ -62,6 +62,11 @@ class ConfigurationHandler:
         if str_value == '' and not can_be_none:
             raise TypeError('Config value is invalid for ' + var_name + ': value cannot be empty')
         return str(str_value)
+
+    def get_port(self):
+        if self.MQTT_USE_SSL:
+            return self.MQTT_PORT_SSL
+        return self.MQTT_PORT
 
     def __init__(self, config_file):
 
@@ -120,7 +125,7 @@ class ConfigurationHandler:
             int_parse(config['GPIOConfig']['door_closed_sensor_input_pin'],
                       'door_closed_sensor_input_pin',
                       False)
-        self.DOOR_CONTROL_OUTPUT_ACTIVE_VALUE = self.\
+        self.DOOR_CONTROL_OUTPUT_ACTIVE = self.\
             bool_parse(config['GPIOActiveStates']['door_control_output_active_value'],
                        'door_control_output_active_value',
                        True)
@@ -128,11 +133,11 @@ class ConfigurationHandler:
             float_parse(config['GPIOActiveStates']['door_control_output_active_delay'],
                         'door_control_output_active_delay',
                         False)
-        self.DOOR_OPEN_SENSOR_INPUT_ACTIVE_VALUE = self.\
+        self.DOOR_OPEN_SENSOR_INPUT_ACTIVE = self.\
             bool_parse(config['GPIOActiveStates']['door_open_sensor_input_active_value'],
                        'door_open_sensor_input_active_value',
                        True)
-        self.DOOR_CLOSED_SENSOR_ACTIVE_VALUE = self.\
+        self.DOOR_CLOSED_SENSOR_INPUT_ACTIVE = self.\
             bool_parse(config['GPIOActiveStates']['door_closed_sensor_active_value'],
                        'door_closed_sensor_active_value',
                        True)

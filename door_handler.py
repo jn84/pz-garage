@@ -107,3 +107,12 @@ class GarageDoor:
             # should handle case where both open and closed states are active simultaneously (invalid state)
             # Maybe let subscribers handle invalid state
         return self._current_state
+
+    def get_current_state(self):
+        states = self.get_states()
+        self.update_state(states)
+        return self._current_state
+
+    def cleanup(self):
+        GPIO.cleanup()
+
