@@ -4,6 +4,7 @@ from random import choice
 
 
 class ConfigurationHandler:
+    INSTANCE_NAME = None  # type: str
     MQTT_HOST = None  # type: str
     MQTT_PORT = None  # type: int
     MQTT_CLIENT_ID = None  # type: str
@@ -73,6 +74,10 @@ class ConfigurationHandler:
         config = configparser.ConfigParser()
         config.read(config_file)
 
+        self.INSTANCE_NAME = self.\
+            str_parse(config['General']['instance_name'],
+                      'instance_name',
+                      False)
         self.MQTT_HOST = self.\
             str_parse(config['MQTTBrokerConfig']['mqtt_host'],
                       'mqtt_host',

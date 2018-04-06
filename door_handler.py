@@ -75,6 +75,7 @@ class GarageDoor:
 
     def toggle_state(self):
         # If state is intermediate (probably moving) then ignore the toggle command
+        # We want to just black hole the command so that the door doesn't trigger again
         if self._current_state is self.STATE_INTERMEDIATE:
             return None
         if self._current_state is self.STATE_INVALID:
