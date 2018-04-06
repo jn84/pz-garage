@@ -170,7 +170,7 @@ except KeyboardInterrupt:
     door.cleanup()
     logger.info('Door controller stopped by keyboard input. Cleaning up and exiting...')
 except:  # Phooey at your PEP 8 rules. I need to log everything.
-    door.cleanup()
+    door.cleanup()  #
     tb = traceback.format_exc()
     logger.error(tb)
     logger.error('Unhandled exception. Quitting...')
